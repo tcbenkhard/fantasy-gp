@@ -4,7 +4,6 @@ import {GrandPrixRepository} from "../repository/gp-repository";
 import {Player} from "../model/player";
 import {GrandPrix} from "../model/grand-prix";
 import {v4 as uuid} from 'uuid';
-import * as AWS from 'aws-sdk';
 import {ApiError} from "../util/error";
 
 export class GrandPrixService {
@@ -26,9 +25,10 @@ export class GrandPrixService {
         } catch (e) {
             // @ts-ignore
             if(e.name === 'UsernameExistsException') {
-                throw ApiError.badRequest('USERNAME_EXISTS', `Username ${request.email} already exists.`)
+                console.log('Username already exists.')
+            } else {
+                throw e;
             }
-            throw e;
         }
 
         const tournament = await this.gp.saveGP({
@@ -41,5 +41,12 @@ export class GrandPrixService {
         await this.gp.savePlayer(player);
 
         return tournament;
+    }
+
+    public findGP = async (gpId: string) => {
+        const gp = await this.gp.findGp(gpId);
+        if(!gp) throw ApiError.notFound('GP_NOT_FOUND', `GP with id ${gpId} does not exist`);
+
+        return gp;
     }
 }

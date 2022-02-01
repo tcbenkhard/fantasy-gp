@@ -13,4 +13,5 @@ export class ApiError {
 
     static badRequest = (errorCode: string, error: string) => new ApiError(400, errorCode, error);
 
+    static notFound = (errorCode: string, error: string) => new ApiError(404, errorCode, error);
 }

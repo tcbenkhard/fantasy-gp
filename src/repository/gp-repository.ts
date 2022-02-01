@@ -25,6 +25,23 @@ export class GrandPrixRepository {
         }).promise();
     }
 
+    public findGp = async (gpId: string) => {
+        const result = await this.db.query({
+            TableName: this.TABLE_NAME,
+            KeyConditionExpression: "#pk= :pk And #sk= :sk",
+            ExpressionAttributeValues: {
+                ":pk": gpId,
+                ":sk": "meta"
+            },
+            ExpressionAttributeNames: {
+                "#pk": "id",
+                "#sk": "sk"
+            }
+        }).promise();
+
+        return result.Items?.pop() as GrandPrix;
+    }
+
     public saveTime = async (time: Time) => {}
     public getAllPlayers = async (tournamentId: string) => {}
     public getAllTimes = async (tournamentId: string, track: Track) => {}

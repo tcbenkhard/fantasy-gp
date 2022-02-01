@@ -66,8 +66,18 @@ export class FantasyGpStack extends cdk.Stack {
         })
     );
 
+    const findGpHandler = new lambda.NodejsFunction(this, 'FindGpHandler', {
+      entry: './src/get-gp-handler.ts',
+      functionName: 'find-gp-handler',
+      environment
+    });
+    gpTable.grantReadData(findGpHandler);
+
     const api = new apigw.RestApi(this, 'fantasy-gp');
     const gp = api.root.addResource('gp');
     gp.addMethod('POST', new LambdaIntegration(createGpHandler));
+
+    const gpDetail = gp.addResource('{gpid}');
+    gpDetail.addMethod('GET', new LambdaIntegration(findGpHandler));
   }
 }
